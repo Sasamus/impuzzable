@@ -1,7 +1,7 @@
 package se.miun.dt015a.logic.model.impuzzable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import se.miun.dt015a.logic.model.Piece;
 import se.miun.dt015a.logic.model.Puzzle;
@@ -45,19 +45,14 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 	int sizeY;
 
 	/**
-	 * Holds the Piece objects
+	 * Holds the placed Piece objects
 	 */
-	List<Piece> pieces = new ArrayList<Piece>();
+	Vector<Piece> placedPieces = new Vector<Piece>();
 
 	/**
-	 * Holds the string representations of the pieces
+	 * Holds the free Piece objects
 	 */
-	List<String> strPieces = new ArrayList<String>();
-
-	/**
-	 * Keeps track of which pieces are placed
-	 */
-	List<Boolean> piecesPlaced = new ArrayList<Boolean>();
+	Vector<Piece> freePieces;
 
 	public SearchAlgorithm() {
 		// Add code here if necessary, but do not add other constructors.
@@ -71,18 +66,92 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 		sizeY = puzzle.getSizeY();
 
 		// Get puzzle's Piece objects
-		pieces = puzzle.getPieces();
+		List<Piece> tmpPieces = puzzle.getPieces();
 
-		// Fill strPieces with the string representation of the Piece objects in
-		// pieces
-		for (Piece piece : pieces) {
-			strPieces.add(piece.toString());
+		// Convert tmpPieces to an Vector
+		freePieces = new Vector<Piece>(tmpPieces);
+
+		// TODO: Creating Lists with all pieces with a certain edge may speed
+		// things up
+
+		// TODO: Remember, the Piece object's Edge objects are public
+
+		int roundCounter = 0;
+
+		// TODO: Make the check more efficient? Impossible?
+		// While puzzle isn't complete
+		while (!puzzle.isComplete()) {
+
+			// Iterate through all x positions
+			for (int x = 0; x < sizeX; x++) {
+
+				// Iterate through all x positions
+				for (int y = 0; y < sizeY; y++) {
+
+					// Check if the position is free
+					if (puzzle.isFree(x, y)) {
+
+						// Iterate through all free pieces
+						for (int i = 0; i < freePieces.size(); i++) {
+
+							// Get the Piece to work with
+							Piece piece = freePieces.get(i);
+
+							// Allows for at most 4 rotations
+							for (int j = 0; j < 4; j++) {
+
+								// Tries to set piece at the current x,y
+								// position
+								if (puzzle.setPiece(x, y, piece)) {
+
+									// Call pieceIsPlaced so that the program
+									// knows what Pieces
+									// are placed and not
+									pieceIsPlaced(piece);
+
+									System.out.println("Placed");
+
+									// Break to stop trying to find a Piece that
+									// fits
+									break;
+
+								} else {
+
+									System.out.println("Rotated");
+
+									// Rotate piece
+									piece.rotate();
+								}
+							}
+							if (puzzle.isFree(x, y)) {
+								System.out.println("Not Placed");
+							}
+
+						}
+					}
+				}
+			}
+			// System.out.println("round: " + ++roundCounter);
 		}
+		System.out.println("Success in round " + roundCounter
+				+ " Wuhuuuu, what a luck!!");
 
 		// Return a ValidPuzzleSolution object
-		return new ValidPuzzleSolution(puzzle, null);
+		return puzzle.getFinalOnceCompleted();
 
 		// return new RandomSearch().solve(puzzle); // Your code here.
+	}
+
+	/**
+	 * Makes sure the Piece object that have been placed is properly tracked
+	 * 
+	 * @param piece
+	 *            The placed Piece object
+	 */
+	private void pieceIsPlaced(Piece piece) {
+
+		placedPieces.add(piece);
+		freePieces.remove(piece);
 	}
 
 }

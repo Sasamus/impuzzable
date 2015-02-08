@@ -76,8 +76,6 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 		// TODO: Remember, the Piece object's Edge objects are public
 
-		int roundCounter = 0;
-
 		// TODO: Make the check more efficient? Impossible?
 		// While puzzle isn't complete
 		while (!puzzle.isComplete()) {
@@ -105,11 +103,13 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 								if (puzzle.setPiece(x, y, piece)) {
 
 									// Call pieceIsPlaced so that the program
-									// knows what Pieces
-									// are placed and not
+									// knows which Pieces
+									// are placed
 									pieceIsPlaced(piece);
 
 									System.out.println("Placed");
+									System.out.println(piece.toString());
+									System.out.println(x + ":" + y);
 
 									// Break to stop trying to find a Piece that
 									// fits
@@ -123,18 +123,18 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 									piece.rotate();
 								}
 							}
-							if (puzzle.isFree(x, y)) {
-								System.out.println("Not Placed");
-							}
 
+							// Stop iterating through free Pieces if the
+							// position isn't free
+							if (!puzzle.isFree(x, y)) {
+								break;
+							}
 						}
+						// TODO: Implement checking and eventual moving of placed Pieces here
 					}
 				}
 			}
-			// System.out.println("round: " + ++roundCounter);
 		}
-		System.out.println("Success in round " + roundCounter
-				+ " Wuhuuuu, what a luck!!");
 
 		// Return a ValidPuzzleSolution object
 		return puzzle.getFinalOnceCompleted();

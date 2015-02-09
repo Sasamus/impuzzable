@@ -83,7 +83,7 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 			// Iterate through all x positions
 			for (int x = 0; x < sizeX; x++) {
 
-				// Iterate through all x positions
+				// Iterate through all y positions
 				for (int y = 0; y < sizeY; y++) {
 
 					// Check if the position is free
@@ -92,45 +92,50 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 						// Iterate through all free pieces
 						for (int i = 0; i < freePieces.size(); i++) {
 
-							// Get the Piece to work with
-							Piece piece = freePieces.get(i);
-
-							// Allows for at most 4 rotations
-							for (int j = 0; j < 4; j++) {
-
-								// Tries to set piece at the current x,y
-								// position
-								if (puzzle.setPiece(x, y, piece)) {
-
-									// Call pieceIsPlaced so that the program
-									// knows which Pieces
-									// are placed
-									pieceIsPlaced(piece);
-
-									System.out.println("Placed");
-									System.out.println(piece.toString());
-									System.out.println(x + ":" + y);
-
-									// Break to stop trying to find a Piece that
-									// fits
-									break;
-
-								} else {
-
-									System.out.println("Rotated");
-
-									// Rotate piece
-									piece.rotate();
-								}
-							}
-
-							// Stop iterating through free Pieces if the
-							// position isn't free
-							if (!puzzle.isFree(x, y)) {
+							// Try to place a Piece
+							if (tryPlacePiece(puzzle, freePieces.get(i), x, y)) {
 								break;
 							}
 						}
-						// TODO: Implement checking and eventual moving of placed Pieces here
+						
+						// Check if x, y is free
+						if (puzzle.isFree(x, y)) {
+							
+							// A Piece variable
+							Piece piece;
+
+							// Iterate through all x occupied positions
+							for (int tmpX = 0; tmpX < x; tmpX++) {
+
+								// Iterate through all occupied y positions
+								for (int tmpY = 0; tmpY < y; tmpY++) {
+									
+									// Remove the Piece at tmpX, tmpY
+									piece = puzzle.removePiece(tmpX, tmpY);
+									
+									// Try to place piece at x, y
+									if (tryPlacePiece(puzzle, piece, x, y)) {
+										
+										// If it succeeds, restart the iteration an leave the lopps
+										// for checking placed pieces
+										x = 0;
+										y = 0;
+										tmpX = -1;
+										break;
+										
+									} else {
+										
+										// If it fails, put piece back
+										tryPlacePiece(puzzle, piece, tmpX, tmpY);
+									}
+								}
+								
+								// If the loop should be broken, break
+								if (tmpX == -1) {
+									break;
+								}
+							}
+						}
 					}
 				}
 			}
@@ -152,6 +157,48 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 		placedPieces.add(piece);
 		freePieces.remove(piece);
+	}
+
+	/**
+	 * Tries to place a Pece
+	 * 
+	 * @param piece
+	 *            The Piece to place
+	 * @return true if piece was placed, else false
+	 */
+	private boolean tryPlacePiece(Puzzle puzzle, Piece piece, int x, int y) {
+
+		// Allows for at most 4 rotations
+		for (int j = 0; j < 4; j++) {
+
+			// Tries to set piece at the current x,y
+			// position
+			if (puzzle.setPiece(x, y, piece)) {
+
+				// Call pieceIsPlaced so that the program
+				// knows which Pieces
+				// are placed
+				pieceIsPlaced(piece);
+
+				System.out.println("Placed");
+				System.out.println(piece.toString());
+				System.out.println(x + ":" + y);
+
+				// Break to stop trying to find a Piece that
+				// fits
+				break;
+
+			} else {
+
+				System.out.println("Rotated");
+
+				// Rotate piece
+				piece.rotate();
+			}
+		}
+
+		return !puzzle.isFree(x, y);
+
 	}
 
 }

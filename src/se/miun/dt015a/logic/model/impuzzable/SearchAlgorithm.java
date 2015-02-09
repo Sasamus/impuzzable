@@ -1,5 +1,6 @@
 package se.miun.dt015a.logic.model.impuzzable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -68,9 +69,6 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 		// Get puzzle's Piece objects
 		List<Piece> tmpPieces = puzzle.getPieces();
 
-		// Convert tmpPieces to an Vector
-		freePieces = new Vector<Piece>(tmpPieces);
-
 		// TODO: Creating Lists with all pieces with a certain edge may speed
 		// things up
 
@@ -79,6 +77,13 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 		// TODO: Make the check more efficient? Impossible?
 		// While puzzle isn't complete
 		while (!puzzle.isComplete()) {
+
+			puzzle.clear();
+
+			// Convert tmpPieces to an Vector
+			freePieces = new Vector<Piece>(tmpPieces);
+
+			Collections.shuffle(freePieces);
 
 			// Iterate through all x positions
 			for (int x = 0; x < sizeX; x++) {
@@ -92,16 +97,21 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 						// Iterate through all free pieces
 						for (int i = 0; i < freePieces.size(); i++) {
 
+							// System.out.println("Trying to place:" +
+							// freePieces.get(i).toString() + ":" + x + "," +
+							// y);
+
 							// Try to place a Piece
 							if (tryPlacePiece(puzzle, freePieces.get(i), x, y)) {
 								break;
 							}
 						}
-						
-						// Check if x, y is free
+
+						// Check if x, y is free. If so, start checking the
+						// placed Pieces
 						if (puzzle.isFree(x, y)) {
-							
-							// A Piece variable
+
+							// Holds the Piece being worked with
 							Piece piece;
 
 							// Iterate through all x occupied positions
@@ -109,27 +119,39 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 								// Iterate through all occupied y positions
 								for (int tmpY = 0; tmpY < y; tmpY++) {
-									
+
 									// Remove the Piece at tmpX, tmpY
-									piece = puzzle.removePiece(tmpX, tmpY);
-									
+									try {
+										piece = puzzle.removePiece(tmpX, tmpY);
+									} catch (Exception e) {
+										break;
+									}
+
+									// System.out.println("Removed:" +
+									// piece.toString() + ":" + tmpX + "," +
+									// tmpY);
+
+									// System.out.println("Trying to place:" +
+									// piece.toString() + ":" + x + "," + y);
+
 									// Try to place piece at x, y
 									if (tryPlacePiece(puzzle, piece, x, y)) {
-										
-										// If it succeeds, restart the iteration an leave the lopps
+
+										// If it succeeds, restart the iteration
+										// an leave the loops
 										// for checking placed pieces
 										x = 0;
 										y = 0;
 										tmpX = -1;
 										break;
-										
+
 									} else {
-										
+
 										// If it fails, put piece back
 										tryPlacePiece(puzzle, piece, tmpX, tmpY);
 									}
 								}
-								
+
 								// If the loop should be broken, break
 								if (tmpX == -1) {
 									break;
@@ -180,9 +202,8 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 				// are placed
 				pieceIsPlaced(piece);
 
-				System.out.println("Placed");
-				System.out.println(piece.toString());
-				System.out.println(x + ":" + y);
+				// System.out.println("Placed:" + piece.toString() + ":" + x +
+				// "," + y);
 
 				// Break to stop trying to find a Piece that
 				// fits
@@ -190,7 +211,7 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 			} else {
 
-				System.out.println("Rotated");
+				// System.out.println("Rotated");
 
 				// Rotate piece
 				piece.rotate();

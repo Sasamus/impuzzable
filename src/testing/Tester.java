@@ -15,10 +15,26 @@ public class Tester {
 	 */
 	public static void main(String[] args) {
 		
-		ImpuzzableAlgorithm solver = new SearchAlgorithm();
-		Impuzzable puzzle = new Impuzzable();
-		ValidPuzzleSolution solution = solver.solve(puzzle);
-		System.out.println(solution);
+		final long startTime = System.currentTimeMillis();
+		
+		ImpuzzableAlgorithm solver; 
+		
+		Impuzzable puzzle;
+		
+		for(int i=0; i < 100; i++){
+			
+			solver = new SearchAlgorithm();
+			
+			puzzle = new Impuzzable();
+			
+			ValidPuzzleSolution solution = solver.solve(puzzle);
+		}
+		
+//		System.out.println(solution);
+		
+		final long endTime = System.currentTimeMillis();
+
+		System.out.println("Total execution time: " + (endTime - startTime)/100 + " milliseconds" );
 
 	}
 

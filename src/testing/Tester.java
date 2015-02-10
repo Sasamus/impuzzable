@@ -14,27 +14,28 @@ public class Tester {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
-		final long startTime = System.currentTimeMillis();
-		
-		ImpuzzableAlgorithm solver; 
-		
+
+		final double startTime = System.nanoTime();
+
+		ImpuzzableAlgorithm solver;
+
 		Impuzzable puzzle;
-		
-		for(int i=0; i < 100; i++){
-			
+
+		for (int i = 0; i < 1000; i++) {
+
 			solver = new SearchAlgorithm();
-			
+
 			puzzle = new Impuzzable();
-			
+
 			ValidPuzzleSolution solution = solver.solve(puzzle);
 		}
-		
-//		System.out.println(solution);
-		
-		final long endTime = System.currentTimeMillis();
 
-		System.out.println("Total execution time: " + (endTime - startTime)/100 + " milliseconds" );
+		// System.out.println(solution);
+
+		final double endTime = System.nanoTime();
+
+		System.out.println("Total execution time: " + (endTime - startTime)
+				/ 1000 + " nanoseconds");
 
 	}
 

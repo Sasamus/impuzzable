@@ -69,6 +69,10 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 		// Get puzzle's Piece objects
 		List<Piece> tmpPieces = puzzle.getPieces();
 
+		Vector<Piece> didNotWorkAsFirstPiece = new Vector<Piece>();
+
+		int rotateFirstPiece = 0;
+
 		// TODO: Creating Lists with all pieces with a certain edge may speed
 		// things up
 
@@ -78,12 +82,36 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 		// While puzzle isn't complete
 		while (!puzzle.isComplete()) {
 
+			// Clear puzzle
 			puzzle.clear();
 
 			// Convert tmpPieces to an Vector
 			freePieces = new Vector<Piece>(tmpPieces);
 
-			Collections.shuffle(freePieces);
+			// If the Piece placed at 0,0 don't work, make sure it's not placed
+			// there anymore
+			if (rotateFirstPiece < 4) {
+
+				// Rotate the first Piece in freePieces
+				freePieces.get(0).rotate();
+
+				// Increment rotateFirstPiece
+				rotateFirstPiece++;
+
+			} else {
+
+				// Add the first Piece to didNotWorksAsFirstPiece
+				didNotWorkAsFirstPiece.add(freePieces.get(0));
+
+				// Shuffle if and unil the first Piece isn't one recorded as not
+				// working
+				while (didNotWorkAsFirstPiece.contains(freePieces.get(0))) {
+
+					// Shuffle freePieces
+					Collections.shuffle(freePieces);
+				}
+
+			}
 
 			// Iterate through all x positions
 			for (int x = 0; x < sizeX; x++) {
@@ -111,52 +139,95 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 						// placed Pieces
 						if (puzzle.isFree(x, y)) {
 
-							// Holds the Piece being worked with
-							Piece piece;
+							// // Holds the Piece being worked with
+							// Piece piece;
+							//
+							// ArrayList<Integer> occupiedPositions = new
+							// ArrayList<Integer>(sizeX*sizeY*2);
+							//
+							// // Iterate through all x occupied positions
+							// for (int tmpX = 0; tmpX < sizeX; tmpX++) {
+							//
+							// // Iterate through all occupied y positions
+							// for (int tmpY = 0; tmpY < sizeY; tmpY++) {
+							//
+							// if(!puzzle.isFree(tmpX, tmpY)){
+							// occupiedPositions.add(tmpX);
+							// occupiedPositions.add(tmpY);
+							// }
+							//
+							// }
+							// }
+							//
+							// Collections.shuffle(occupiedPositions);
+							//
+							// for(int i=0; i < occupiedPositions.size() -1;
+							// i++){
+							//
+							// // Remove the Piece at tmpX, tmpY
+							// try {
+							// piece =
+							// puzzle.removePiece(occupiedPositions.get(i),
+							// occupiedPositions.get(i + 1));
+							// } catch (Exception e) {
+							// break;
+							// }
+							//
+							// // Try to place piece at x, y
+							// if (tryPlacePiece(puzzle, piece, x, y)) {
+							//
+							// // If it succeeds, restart the iteration
+							// // an leave the loops
+							// // for checking placed pieces
+							// x = 0;
+							// y = 0;
+							// break;
+							//
+							// } else {
+							//
+							// // If it fails, put piece back
+							// tryPlacePiece(puzzle, piece,
+							// occupiedPositions.get(i), occupiedPositions.get(i
+							// + 1));
+							// }
+							// }
 
-							// Iterate through all x occupied positions
-							for (int tmpX = 0; tmpX < x; tmpX++) {
-
-								// Iterate through all occupied y positions
-								for (int tmpY = 0; tmpY < y; tmpY++) {
-
-									// Remove the Piece at tmpX, tmpY
-									try {
-										piece = puzzle.removePiece(tmpX, tmpY);
-									} catch (Exception e) {
-										break;
-									}
-
-									// System.out.println("Removed:" +
-									// piece.toString() + ":" + tmpX + "," +
-									// tmpY);
-
-									// System.out.println("Trying to place:" +
-									// piece.toString() + ":" + x + "," + y);
-
-									// Try to place piece at x, y
-									if (tryPlacePiece(puzzle, piece, x, y)) {
-
-										// If it succeeds, restart the iteration
-										// an leave the loops
-										// for checking placed pieces
-										x = 0;
-										y = 0;
-										tmpX = -1;
-										break;
-
-									} else {
-
-										// If it fails, put piece back
-										tryPlacePiece(puzzle, piece, tmpX, tmpY);
-									}
-								}
-
-								// If the loop should be broken, break
-								if (tmpX == -1) {
-									break;
-								}
-							}
+							// // Iterate through all x occupied positions
+							// for (int tmpX = 0; tmpX < x; tmpX++) {
+							//
+							// // Iterate through all occupied y positions
+							// for (int tmpY = 0; tmpY < y; tmpY++) {
+							//
+							// // Remove the Piece at tmpX, tmpY
+							// try {
+							// piece = puzzle.removePiece(tmpX, tmpY);
+							// } catch (Exception e) {
+							// break;
+							// }
+							//
+							// // Try to place piece at x, y
+							// if (tryPlacePiece(puzzle, piece, x, y)) {
+							//
+							// // If it succeeds, restart the iteration
+							// // an leave the loops
+							// // for checking placed pieces
+							// x = 0;
+							// y = 0;
+							// tmpX = -1;
+							// break;
+							//
+							// } else {
+							//
+							// // If it fails, put piece back
+							// tryPlacePiece(puzzle, piece, tmpX, tmpY);
+							// }
+							// }
+							//
+							// // If the loop should be broken, break
+							// if (tmpX == -1) {
+							// break;
+							// }
+							// }
 						}
 					}
 				}

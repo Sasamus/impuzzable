@@ -20,6 +20,8 @@ public class Tester {
 		ImpuzzableAlgorithm solver;
 
 		Impuzzable puzzle;
+		
+		ValidPuzzleSolution solution = null;
 
 		for (int i = 0; i < 1000; i++) {
 
@@ -27,10 +29,10 @@ public class Tester {
 
 			puzzle = new Impuzzable();
 
-			ValidPuzzleSolution solution = solver.solve(puzzle);
+			solution = solver.solve(puzzle);
 		}
 
-		// System.out.println(solution);
+		System.out.println(solution);
 
 		final double endTime = System.nanoTime();
 

@@ -69,23 +69,26 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 		// Get puzzle's Piece objects
 		List<Piece> tmpPieces = puzzle.getPieces();
 
+		// Convert tmpPieces to an Vector
+		freePieces = new Vector<Piece>(tmpPieces);
+
+		// A Vector with Pieces that can't be at 0,0
 		Vector<Piece> didNotWorkAsFirstPiece = new Vector<Piece>();
 
+		// Keeps track of the rotations of the Piece that is trying to be placed
+		// at 0,0
 		int rotateFirstPiece = 0;
 
-		// TODO: Creating Lists with all pieces with a certain edge may speed
-		// things up
+		// Keeps track of if the current position is a dead end
+		boolean restartLoop = false;
 
-		// TODO: Remember, the Piece object's Edge objects are public
-
-		// TODO: Make the check more efficient? Impossible?
 		// While puzzle isn't complete
 		while (!puzzle.isComplete()) {
 
 			// Clear puzzle
 			puzzle.clear();
 
-			// Convert tmpPieces to an Vector
+			// Reset freePieces
 			freePieces = new Vector<Piece>(tmpPieces);
 
 			// If the Piece placed at 0,0 don't work, make sure it's not placed
@@ -103,14 +106,14 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 				// Add the first Piece to didNotWorksAsFirstPiece
 				didNotWorkAsFirstPiece.add(freePieces.get(0));
 
-				// Shuffle if and unil the first Piece isn't one recorded as not
+				// Shuffle if and until the first Piece isn't one recorded as
+				// not
 				// working
 				while (didNotWorkAsFirstPiece.contains(freePieces.get(0))) {
 
 					// Shuffle freePieces
 					Collections.shuffle(freePieces);
 				}
-
 			}
 
 			// Iterate through all x positions
@@ -122,7 +125,7 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 					// Check if the position is free
 					if (puzzle.isFree(x, y)) {
 
-						// Iterate through all free pieces
+						// Iterate through all eligible Pieces
 						for (int i = 0; i < freePieces.size(); i++) {
 
 							// System.out.println("Trying to place:" +
@@ -135,109 +138,22 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 							}
 						}
 
-						// Check if x, y is free. If so, start checking the
-						// placed Pieces
 						if (puzzle.isFree(x, y)) {
-
-							// // Holds the Piece being worked with
-							// Piece piece;
-							//
-							// ArrayList<Integer> occupiedPositions = new
-							// ArrayList<Integer>(sizeX*sizeY*2);
-							//
-							// // Iterate through all x occupied positions
-							// for (int tmpX = 0; tmpX < sizeX; tmpX++) {
-							//
-							// // Iterate through all occupied y positions
-							// for (int tmpY = 0; tmpY < sizeY; tmpY++) {
-							//
-							// if(!puzzle.isFree(tmpX, tmpY)){
-							// occupiedPositions.add(tmpX);
-							// occupiedPositions.add(tmpY);
-							// }
-							//
-							// }
-							// }
-							//
-							// Collections.shuffle(occupiedPositions);
-							//
-							// for(int i=0; i < occupiedPositions.size() -1;
-							// i++){
-							//
-							// // Remove the Piece at tmpX, tmpY
-							// try {
-							// piece =
-							// puzzle.removePiece(occupiedPositions.get(i),
-							// occupiedPositions.get(i + 1));
-							// } catch (Exception e) {
-							// break;
-							// }
-							//
-							// // Try to place piece at x, y
-							// if (tryPlacePiece(puzzle, piece, x, y)) {
-							//
-							// // If it succeeds, restart the iteration
-							// // an leave the loops
-							// // for checking placed pieces
-							// x = 0;
-							// y = 0;
-							// break;
-							//
-							// } else {
-							//
-							// // If it fails, put piece back
-							// tryPlacePiece(puzzle, piece,
-							// occupiedPositions.get(i), occupiedPositions.get(i
-							// + 1));
-							// }
-							// }
-
-							// // Iterate through all x occupied positions
-							// for (int tmpX = 0; tmpX < x; tmpX++) {
-							//
-							// // Iterate through all occupied y positions
-							// for (int tmpY = 0; tmpY < y; tmpY++) {
-							//
-							// // Remove the Piece at tmpX, tmpY
-							// try {
-							// piece = puzzle.removePiece(tmpX, tmpY);
-							// } catch (Exception e) {
-							// break;
-							// }
-							//
-							// // Try to place piece at x, y
-							// if (tryPlacePiece(puzzle, piece, x, y)) {
-							//
-							// // If it succeeds, restart the iteration
-							// // an leave the loops
-							// // for checking placed pieces
-							// x = 0;
-							// y = 0;
-							// tmpX = -1;
-							// break;
-							//
-							// } else {
-							//
-							// // If it fails, put piece back
-							// tryPlacePiece(puzzle, piece, tmpX, tmpY);
-							// }
-							// }
-							//
-							// // If the loop should be broken, break
-							// if (tmpX == -1) {
-							// break;
-							// }
-							// }
+							restartLoop = true;
+							break;
 						}
 					}
+				}
+
+				if (restartLoop) {
+					restartLoop = false;
+					break;
 				}
 			}
 		}
 
 		// Return a ValidPuzzleSolution object
 		return puzzle.getFinalOnceCompleted();
-
-		// return new RandomSearch().solve(puzzle); // Your code here.
 	}
 
 	/**
@@ -253,7 +169,7 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 	}
 
 	/**
-	 * Tries to place a Pece
+	 * Tries to place a Piece
 	 * 
 	 * @param piece
 	 *            The Piece to place

@@ -20,19 +20,6 @@ import se.miun.dt015a.logic.model.ValidPuzzleSolution;
  */
 public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
-	/*
-	 * Ideas:
-	 * 
-	 * Get string versions of all pieces, maybe convert it to be easier to
-	 * handle. Check what pieces have the needed edge, try to place those,
-	 * rotating the piece until it fits or not. (Checking all edges if the piece
-	 * fits before placing may be faster) If no free pieces fit, check if a
-	 * placed piece will. If one does, move it there. Redo the process on the
-	 * newly made free space.
-	 * 
-	 * If the temporary puzzle is filled, place pieces in the actual puzzle.
-	 */
-
 	// Add member fields if necessary.
 
 	/**

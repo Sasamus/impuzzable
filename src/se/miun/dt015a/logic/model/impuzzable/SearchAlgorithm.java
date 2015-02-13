@@ -68,7 +68,7 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 		// Keeps track of if the current position is a dead end
 		boolean restartLoop = false;
-
+		
 		// While puzzle isn't complete
 		while (!puzzle.isComplete()) {
 
@@ -78,8 +78,8 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 			// Reset freePieces
 			freePieces = new Vector<Piece>(tmpPieces);
 
-			// If the Piece placed at 0,0 don't work, make sure it's not placed
-			// there anymore
+//			// If the Piece placed at 0,0 don't work, make sure it's not placed
+//			// there anymore
 			if (rotateFirstPiece < 4) {
 
 				// Rotate the first Piece in freePieces
@@ -103,21 +103,21 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 				}
 			}
 
-			// Iterate through all x positions
+			// Iterate through all y positions
 			for (int x = 0; x < sizeX; x++) {
 
-				// Iterate through all y positions
+				// Iterate through all x positions
 				for (int y = 0; y < sizeY; y++) {
-
+					
 					// Check if the position is free
 					if (puzzle.isFree(x, y)) {
-
+							
 						// Iterate through all eligible Pieces
 						for (int i = 0; i < freePieces.size(); i++) {
 
-							// System.out.println("Trying to place:" +
-							// freePieces.get(i).toString() + ":" + x + "," +
-							// y);
+//							System.out.println("Trying to place:" +
+//							freePieces.get(i).toString() + ":" + x + "," +
+//							y);
 
 							// Try to place a Piece
 							if (tryPlacePiece(puzzle, freePieces.get(i), x, y)) {
@@ -144,18 +144,6 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 	}
 
 	/**
-	 * Makes sure the Piece object that have been placed is properly tracked
-	 * 
-	 * @param piece
-	 *            The placed Piece object
-	 */
-	private void pieceIsPlaced(Piece piece) {
-
-		placedPieces.add(piece);
-		freePieces.remove(piece);
-	}
-
-	/**
 	 * Tries to place a Piece
 	 * 
 	 * @param piece
@@ -171,21 +159,17 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 			// position
 			if (puzzle.setPiece(x, y, piece)) {
 
-				// Call pieceIsPlaced so that the program
-				// knows which Pieces
-				// are placed
-				pieceIsPlaced(piece);
+				// Remove piece from freePieces
+				freePieces.remove(piece);
 
-				// System.out.println("Placed:" + piece.toString() + ":" + x +
-				// "," + y);
+//				 System.out.println("Placed:" + piece.toString() + ":" + x +
+//				 "," + y);
 
 				// Break to stop trying to find a Piece that
 				// fits
 				break;
 
 			} else {
-
-				// System.out.println("Rotated");
 
 				// Rotate piece
 				piece.rotate();

@@ -15,12 +15,44 @@ import se.miun.dt015a.logic.model.ValidPuzzleSolution;
  * You may want to create additional helper classes. However, you are not
  * allowed to alter the other existing classes.
  */
+
 /**
  * @author Albin Engström
  */
 public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 	// Add member fields if necessary.
+
+	/*
+	 * Thoughts:
+	 * 
+	 * I had a lot of ideas of things that could speed things up but most of
+	 * them required work and/or preprocessing that took more time than it's use
+	 * saved.
+	 * 
+	 * Other things I simply couldn't make work. Some, perhaps, because they
+	 * shouldn't work and some because I couldn't manage to get it to work.
+	 * 
+	 * Backtracking, for example, always ran into the problem of repeatedly
+	 * placing the same pieces or same sequences of pieces over and over again.
+	 * 
+	 * While it seems fairly simple to resolve none of my approaches worked out.
+	 * So I gave up on that because of time constraints.
+	 * 
+	 * In the end, my algorithm works, and judging by the times others have
+	 * talked about it's pretty fast. Which doesn't make too much sense since
+	 * it's fairly crude and relies too much on brute force for my tastes,
+	 * although there are some things that make it somewhat clever.
+	 * 
+	 * I get and average of 1-1.2 microseconds, just for reference.
+	 * 
+	 * So I suspect my superior times are a product of a better CPU and
+	 * possibly a more efficient testing system and not a superior algorithm.
+	 * 
+	 * I'm not too satisfied with it but don't have time to do more. So I've
+	 * given up my hopes of being fastest and have to aim at completing the
+	 * assignment.
+	 */
 
 	/**
 	 * Holds the size of X
@@ -59,6 +91,9 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 		// Convert tmpPieces to an Vector
 		freePieces = new Vector<Piece>(tmpPieces);
 
+		// Shuffle freePieces
+		Collections.shuffle(freePieces);
+
 		// A Vector with Pieces that can't be at 0,0
 		Vector<Piece> didNotWorkAsFirstPiece = new Vector<Piece>();
 
@@ -68,7 +103,7 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 		// Keeps track of if the current position is a dead end
 		boolean restartLoop = false;
-		
+
 		// While puzzle isn't complete
 		while (!puzzle.isComplete()) {
 
@@ -78,8 +113,9 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 			// Reset freePieces
 			freePieces = new Vector<Piece>(tmpPieces);
 
-//			// If the Piece placed at 0,0 don't work, make sure it's not placed
-//			// there anymore
+			// // If the Piece placed at 0,0 don't work, make sure it's not
+			// placed
+			// // there anymore
 			if (rotateFirstPiece < 4) {
 
 				// Rotate the first Piece in freePieces
@@ -108,16 +144,12 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 				// Iterate through all x positions
 				for (int y = 0; y < sizeY; y++) {
-					
+
 					// Check if the position is free
 					if (puzzle.isFree(x, y)) {
-							
+
 						// Iterate through all eligible Pieces
 						for (int i = 0; i < freePieces.size(); i++) {
-
-//							System.out.println("Trying to place:" +
-//							freePieces.get(i).toString() + ":" + x + "," +
-//							y);
 
 							// Try to place a Piece
 							if (tryPlacePiece(puzzle, freePieces.get(i), x, y)) {
@@ -161,9 +193,6 @@ public class SearchAlgorithm implements ImpuzzableAlgorithm {
 
 				// Remove piece from freePieces
 				freePieces.remove(piece);
-
-//				 System.out.println("Placed:" + piece.toString() + ":" + x +
-//				 "," + y);
 
 				// Break to stop trying to find a Piece that
 				// fits
